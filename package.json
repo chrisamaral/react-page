@@ -1,7 +1,7 @@
 {
   "name": "react-page",
   "repository": "chrisamaral/react-page",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "scripts": {
     "build": "browserify --debug examples/src.js --verbose -o examples/bundle.js",
     "watch": "watchify --debug examples/src.js --verbose -o examples/bundle.js"
