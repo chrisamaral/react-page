@@ -15,7 +15,8 @@ var page = require('react-page');
 function render(Root) {
 
   React.render(<Root />,
-    document.getElementById('app');
+    document.getElementById('app')
+  );
 
 }
 
