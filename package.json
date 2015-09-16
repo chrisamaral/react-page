@@ -1,0 +1,16 @@
+{
+  "name": "react-page",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "browserify --debug examples/src.js --verbose -o examples/bundle.js",
+    "watch": "watchify --debug examples/src.js --verbose -o examples/bundle.js"
+  },
+  "dependencies": {
+    "page": "^1.6.3",
+    "react": "^0.13.3"
+  },
+  "devDependencies": {
+    "browserify": "^11.1.0",
+    "watchify": "^3.4.0"
+  }
+}
