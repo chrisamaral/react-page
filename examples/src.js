@@ -29,13 +29,16 @@ var cType = {
   getChild: PropTypes.func.isRequired
 };
 
+function getChild() {
+  return createElement(this.context.getChild());
+}
+
 var Sim = createClass({
 
   contextTypes: cType,
+  getChild: getChild,
 
   render: function () {
-
-    var Child = this.context.getChild();
 
     return div({className: 'container'},
 
@@ -48,7 +51,7 @@ var Sim = createClass({
         div({className: 'col-sm-8'},
           h1(null, 'Sim'),
           hr(),
-          createElement(Child)
+          this.getChild()
         )
       )
     );
@@ -70,12 +73,11 @@ var Pera = createClass({
 var Nao = createClass({
 
   contextTypes: cType,
+  getChild: getChild,
 
   render: function () {
 
-    var Child = this.context.getChild();
-
-    return div(null, h2(null, 'Não'), createElement(Child));
+    return div(null, h2(null, 'Não'), this.getChild());
 
   }
 
@@ -84,12 +86,15 @@ var Nao = createClass({
 var Talvez = createClass({
 
   contextTypes: cType,
+  getChild: getChild,
 
   render: function () {
 
-    var Child = this.context.getChild();
-
-    return div(null, h2(null, 'Talvez'), createElement(Child));
+    return div(
+      null,
+      h2(null, 'Talvez'),
+      this.getChild()
+    );
 
   }
 

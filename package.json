@@ -1,5 +1,6 @@
 {
   "name": "react-page",
+  "repository": "chrisamaral/react-page",
   "version": "0.0.1",
   "scripts": {
     "build": "browserify --debug examples/src.js --verbose -o examples/bundle.js",
