@@ -12,6 +12,7 @@ var aside = DOM.aside;
 var ul = DOM.ul;
 var li = DOM.li;
 var a = DOM.a;
+var button = DOM.button;
 var PropTypes = React.PropTypes;
 
 var pages = [
@@ -35,8 +36,23 @@ function getChild() {
 
 var Sim = createClass({
 
+  displayName: 'Sim',
   contextTypes: cType,
   getChild: getChild,
+
+  getInitialState: function () {
+    return {
+      count: 1
+    };
+  },
+
+  inc: function () {
+
+    this.setState({
+      count: this.state.count + 1
+    });
+
+  },
 
   render: function () {
 
@@ -49,8 +65,9 @@ var Sim = createClass({
         ),
 
         div({className: 'col-sm-8'},
-          h1(null, 'Sim'),
+          h1(null, 'Sim ' + this.state.count),
           hr(),
+          button({className: 'btn btn-primary', onClick: this.inc}, '+'),
           this.getChild()
         )
       )
@@ -62,6 +79,7 @@ var Sim = createClass({
 
 var Pera = createClass({
 
+  displayName: 'Pera',
   render: function () {
 
     return div(null, h2(null, 'Pera...'));
@@ -72,6 +90,7 @@ var Pera = createClass({
 
 var Nao = createClass({
 
+  displayName: 'Não',
   contextTypes: cType,
   getChild: getChild,
 
@@ -85,6 +104,7 @@ var Nao = createClass({
 
 var Talvez = createClass({
 
+  displayName: 'Talvez',
   contextTypes: cType,
   getChild: getChild,
 
@@ -100,8 +120,10 @@ var Talvez = createClass({
 
 });
 
+
 var Nope = createClass({
 
+  displayName: 'Nope',
   contextTypes: {
     route: PropTypes.object.isRequired
   },
@@ -119,6 +141,7 @@ var Nope = createClass({
 
 var Edai = createClass({
 
+  displayName: 'Edai',
   render: function () {
 
     return div({className: 'well'}, 'Ninguém liga');
@@ -127,11 +150,8 @@ var Edai = createClass({
 
 });
 
-function render(Elem) {
-  React.render(
-    createElement(Elem),
-    document.getElementById('app')
-  );
+function render(el) {
+  React.render(el, document.getElementById('app'));
 }
 
 irl('/', Sim, Pera, render);
