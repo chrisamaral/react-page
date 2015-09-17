@@ -12,11 +12,9 @@ var Container = require('./components/Container');
 var Profile = require('./components/Profile');
 var page = require('react-page');
 
-function render(Root) {
+function render(el) {
 
-  React.render(<Root />,
-    document.getElementById('app')
-  );
+  React.render(el, document.getElementById('app'));
 
 }
 
