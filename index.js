@@ -18,7 +18,6 @@ var Page = React.createClass({
 
   childContextTypes: {
     getChild: PropTypes.func.isRequired,
-    components: PropTypes.array.isRequired,
     route: PropTypes.object.isRequired
   },
 
