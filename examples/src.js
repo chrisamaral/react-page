@@ -9,6 +9,7 @@ var h2 = DOM.h2;
 var hr = DOM.hr;
 var div = DOM.div;
 var aside = DOM.aside;
+var em = DOM.em;
 var ul = DOM.ul;
 var li = DOM.li;
 var a = DOM.a;
@@ -20,25 +21,18 @@ var pages = [
   {text: 'Não', href: '/nao'},
   {text: 'Talvez', href: '/talvez'}
 ].map(function (p, index) {
-
     return li({key: index},
       a({href: p.href}, p.text));
-
   });
 
 var cType = {
-  getChild: PropTypes.func.isRequired
+  childComponent: PropTypes.func.isRequired
 };
 
-function getChild() {
-  return createElement(this.context.getChild());
-}
+var Raiz = createClass({
 
-var Sim = createClass({
-
-  displayName: 'Sim',
+  displayName: 'Raiz',
   contextTypes: cType,
-  getChild: getChild,
 
   getInitialState: function () {
     return {
@@ -65,10 +59,10 @@ var Sim = createClass({
         ),
 
         div({className: 'col-sm-8'},
-          h1(null, 'Sim ' + this.state.count),
+          h1(null, 'Topo da árvore ' + this.state.count),
           hr(),
           button({className: 'btn btn-primary', onClick: this.inc}, '+'),
-          this.getChild()
+          createElement(this.context.childComponent)
         )
       )
     );
@@ -77,12 +71,12 @@ var Sim = createClass({
 
 });
 
-var Pera = createClass({
+var Sim = createClass({
 
-  displayName: 'Pera',
+  displayName: 'Sim',
   render: function () {
 
-    return div(null, h2(null, 'Pera...'));
+    return div(null, h2(null, 'Sim, e acabou'));
 
   }
 
@@ -92,11 +86,11 @@ var Nao = createClass({
 
   displayName: 'Não',
   contextTypes: cType,
-  getChild: getChild,
 
   render: function () {
 
-    return div(null, h2(null, 'Não'), this.getChild());
+    return div(null, h2(null, 'Não'),
+      createElement(this.context.childComponent));
 
   }
 
@@ -106,14 +100,13 @@ var Talvez = createClass({
 
   displayName: 'Talvez',
   contextTypes: cType,
-  getChild: getChild,
 
   render: function () {
 
     return div(
       null,
       h2(null, 'Talvez'),
-      this.getChild()
+      createElement(this.context.childComponent)
     );
 
   }
@@ -121,9 +114,9 @@ var Talvez = createClass({
 });
 
 
-var Nope = createClass({
+var ConteMais = createClass({
 
-  displayName: 'Nope',
+  displayName: 'ConteMais',
   contextTypes: {
     route: PropTypes.object.isRequired
   },
@@ -150,13 +143,47 @@ var Edai = createClass({
 
 });
 
-function render(el) {
-  React.render(el, document.getElementById('app'));
+var Loading = createClass({
+  displayName: 'Loading',
+  render: function () {
+    return em(null, 'Loading...');
+  }
+});
+
+function render(Root) {
+  React.render(createElement(Root), document.getElementById('app'));
 }
 
-irl('/', Sim, Pera, render);
-irl('/nao', Sim, Nao, Nope, render);
-irl('/talvez', Sim, Talvez, Nope, render);
-irl('/nao/the-end', Sim, Nao, Edai, render);
-irl('/talvez/the-end', Sim, Talvez, Edai, render);
+
+function inAMin() {
+
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      resolve(true);
+    }, 3000);
+  });
+
+}
+
+irl('/',
+
+  irl
+    .resolve(inAMin)
+    .then(Loading)
+    .then(Raiz),
+
+  Sim,
+
+  render
+);
+
+
+Edai = irl.resolve(inAMin)
+  .then(Loading)
+  .then(Edai);
+
+irl('/nao', Raiz, Nao, ConteMais, render);
+irl('/talvez', Raiz, Talvez, ConteMais, render);
+irl('/nao/the-end', Raiz, Nao, Edai, render);
+irl('/talvez/the-end', Raiz, Talvez, Edai, render);
 irl();

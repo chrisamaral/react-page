@@ -1,33 +1,81 @@
 var page = require('page');
 var React = require('react');
+
 var PropTypes = React.PropTypes;
 var createElement = React.createElement;
+var createClass = React.createClass;
+var AsyncWrap = require('./AsyncWrap');
 
-var Page = React.createClass({
+var routes = [];
 
-  displayName: 'Page',
+function safe(component) {
+  return component instanceof AsyncWrap
+    ? component.getComponent()
+    : component;
+}
 
-  getChildContext: function () {
+function find(component) {
+  var route;
 
-    return {
-      getChild: this.props.getSubRoute,
-      route: this.props.route
-    };
-
-  },
-
-  childContextTypes: {
-    getChild: PropTypes.func.isRequired,
-    route: PropTypes.object.isRequired
-  },
-
-  render: function () {
-    return createElement(this.props.Root);
+  for (var i = 0; i < routes.length; i++) {
+    if (routes[i].component === component) {
+      route = routes[i].route;
+      break;
+    }
   }
 
-});
+  return route;
+}
 
-function irl() {
+function getRoute(components, context) {
+
+  var component = safe(components.shift());
+
+  if (!component) {
+    return null;
+  }
+
+  var route = find(component);
+
+  if (!route) {
+
+    route = createClass({
+
+      displayName: 'Route',
+
+      getChildContext: function () {
+        return {
+          childComponent: route.childComponent,
+          route: context
+        };
+      },
+
+      childContextTypes: {
+        childComponent: PropTypes.func.isRequired,
+        route: PropTypes.object.isRequired
+      },
+
+      render: function () {
+        return component
+          ? createElement(component, this.props, this.props.children)
+          : null;
+      }
+
+    });
+
+    routes.push({
+      component: component,
+      route: route
+    })
+  }
+
+  route.childComponent = getRoute(components, context);
+
+  return route;
+
+}
+
+function reactPage() {
 
   var args = Array.prototype.slice.call(arguments);
 
@@ -37,25 +85,21 @@ function irl() {
   var callback = args.pop();
   var components = args;
 
-  var index = 1;
-
-  function getSubRoute() {
-    if (index === components.length) {
-      index = 1;
-    }
-    return components[index++] || null;
-  }
-
   page(uri, function (ctx) {
 
-    callback(createElement(Page, {
-        getSubRoute: getSubRoute,
-        route: ctx,
-        Root: components[0]
-      }));
+    callback(
+      getRoute(
+        components.concat(),
+        ctx
+      )
+    );
 
   });
 
 }
 
-module.exports = irl;
+reactPage.resolve = function (loader) {
+  return new AsyncWrap(loader);
+};
+
+module.exports = reactPage;
