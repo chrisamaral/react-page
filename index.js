@@ -6,15 +6,8 @@ var Empty = require('./Empty');
 var PropTypes = React.PropTypes;
 var createElement = React.createElement;
 var createClass = React.createClass;
-var AsyncWrap = require('./AsyncWrap');
 
 var routes = [];
-
-function safe(component) {
-  return component instanceof AsyncWrap
-    ? component.getComponent()
-    : component;
-}
 
 function find(component) {
   var route;
@@ -31,7 +24,7 @@ function find(component) {
 
 function getRoute(components, context) {
 
-  var component = safe(components.shift());
+  var component = components.shift();
 
   if (!component) {
     return Empty;
@@ -100,8 +93,6 @@ function reactPage() {
 
 }
 
-reactPage.when = function (loader, Success, Error, Loading) {
-  return new AsyncWrap(loader, Success, Error, Loading);
-};
+reactPage.when = require('./Async');
 
 module.exports = reactPage;
