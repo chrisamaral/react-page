@@ -1,6 +1,7 @@
 var React = require('react');
 var createElement = React.createElement;
 var createClass = React.createClass;
+var Empty = require('./Empty');
 
 function isPromise(obj) {
   return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
@@ -24,9 +25,12 @@ function Wrap(config) {
 
     },
 
-    mergeProps: function (props) {
+    render: function () {
+
+      var props = {payload: config.payload};
 
       var parentProps = this.props;
+
 
       for (var key in parentProps) {
         if (parentProps.hasOwnProperty(key)) {
@@ -34,31 +38,12 @@ function Wrap(config) {
         }
       }
 
-      return props;
-
-    },
-
-    render: function () {
-      var status = 'Loading';
-      var resolved = {};
-
-      if (config.error) {
-
-        status = 'Error';
-        resolved.error = config.error;
-
-      } else if (config.payload) {
-
-        status = 'Success';
-        resolved.payload = config.payload;
-
-      }
-
-      return createElement(
-        config[status] || null,
-        this.mergeProps(resolved),
-        this.props.children
-      );
+      return Boolean(config.Current) &&
+        createElement(
+          config.Current,
+          props,
+          this.props.children
+        );
 
     }
 
@@ -66,11 +51,12 @@ function Wrap(config) {
 
 }
 
-function Async(loader) {
+function Async(loader, Success, Error, Loading) {
 
   this.load = loader;
-  this.catch = this.catch.bind(this);
-  this.then = this.then.bind(this);
+  this.Success = Success;
+  this.Error = Error || Empty;
+  this.Loading = Loading || Empty;
 
 }
 
@@ -92,63 +78,36 @@ Async.prototype.Component = null;
 
 Async.prototype.onResolve = function (payload) {
 
-  delete this.error;
   this.payload = payload;
+  this.Current = this.Success;
   this.instance.forceUpdate();
 
 };
 
-Async.prototype.onReject = function (error) {
+Async.prototype.onReject = function (payload) {
 
-  delete this.payload;
-  this.error = error;
+  this.payload = payload;
+  this.Current = this.Error;
   this.instance.forceUpdate();
 
-};
-
-Async.prototype.catch = function (Error) {
-
-  this.Error = Error;
-
-  return this;
-
-};
-
-Async.prototype.then = function (Comp, Error) {
-
-  if (Comp) {
-
-    if (this.Loading) {
-      this.Success = Comp;
-    } else {
-      this.Loading = Comp;
-    }
-
-  }
-
-  if (Error) {
-    this.Error = Error;
-  }
-
-  return this;
 };
 
 Async.prototype.getComponent = function () {
 
-  delete this.error;
   delete this.payload;
+
+  this.Current = this.Loading;
 
   this.lock = Date.now();
 
-  var response, err;
+  var response, threw;
 
   try {
     response = this.load();
   } catch (e) {
-    err = e;
+    threw = true;
+    response = e;
   }
-
-  this.Error = this.Error || this.Success;
 
   if (!this.Component) {
     this.Component = Wrap(this);
@@ -161,7 +120,7 @@ Async.prototype.getComponent = function () {
       .catch(this.once(this.onReject))
 
   } else {
-    this.error = err;
+    this.Current = threw ? this.Error : this.Success;
     this.payload = response;
   }
 

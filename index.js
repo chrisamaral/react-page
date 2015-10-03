@@ -1,6 +1,8 @@
 var page = require('page');
 var React = require('react');
 
+var Empty = require('./Empty');
+
 var PropTypes = React.PropTypes;
 var createElement = React.createElement;
 var createClass = React.createClass;
@@ -32,7 +34,7 @@ function getRoute(components, context) {
   var component = safe(components.shift());
 
   if (!component) {
-    return null;
+    return Empty;
   }
 
   var route = find(component);
@@ -98,8 +100,8 @@ function reactPage() {
 
 }
 
-reactPage.resolve = function (loader) {
-  return new AsyncWrap(loader);
+reactPage.when = function (loader, Success, Error, Loading) {
+  return new AsyncWrap(loader, Success, Error, Loading);
 };
 
 module.exports = reactPage;

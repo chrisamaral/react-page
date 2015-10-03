@@ -150,6 +150,13 @@ var Loading = createClass({
   }
 });
 
+var Ops = createClass({
+  displayName: 'Ops!',
+  render: function () {
+    return em(null, 'Oops!');
+  }
+});
+
 function render(Root) {
   React.render(createElement(Root), document.getElementById('app'));
 }
@@ -159,7 +166,11 @@ function inAMin() {
 
   return new Promise(function (resolve, reject) {
     setTimeout(function () {
-      resolve(true);
+
+      Number(Math.random().toString().slice(-1)) % 3
+        ? resolve(true)
+        : reject(false);
+
     }, 3000);
   });
 
@@ -167,10 +178,7 @@ function inAMin() {
 
 irl('/',
 
-  irl
-    .resolve(inAMin)
-    .then(Loading)
-    .then(Raiz),
+  irl.when(inAMin, Raiz, Ops, Loading),
 
   Sim,
 
@@ -178,9 +186,7 @@ irl('/',
 );
 
 
-Edai = irl.resolve(inAMin)
-  .then(Loading)
-  .then(Edai);
+Edai = irl.when(inAMin, Edai, Ops, Loading);
 
 irl('/nao', Raiz, Nao, ConteMais, render);
 irl('/talvez', Raiz, Talvez, ConteMais, render);
