@@ -16,11 +16,11 @@ var Profile = require('./components/Profile');
 
 var DOM = React.DOM;
 
-var header = DOM.header.bind(null);
-var h1 = DOM.h1.bind(null);
-var section = DOM.section.bind(null);
-var p = DOM.p.bind(null);
-var blockquote = DOM.blockquote.bind(null);
+var header = DOM.header.bind(null, null);
+var h1 = DOM.h1.bind(null, null);
+var section = DOM.section.bind(null, null);
+var p = DOM.p.bind(null, null);
+var blockquote = DOM.blockquote.bind(null, null);
 
 var el = React.createElement;
 var types = React.PropTypes;

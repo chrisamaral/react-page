@@ -4,13 +4,16 @@
   "description": "minimalist router for react",
   "version": "2.1.1",
   "license": "MIT",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "build": "browserify --debug examples/src.js --verbose -o examples/bundle.js",
     "watch": "watchify --debug examples/src.js --verbose -o examples/bundle.js"
   },
   "dependencies": {
-    "page": "1.6.3"
+    "object-assign": "^4.0.1",
+    "page": "1.6.3",
+    "path-to-regexp": "^1.2.1",
+    "qs": "^5.1.0"
   },
   "peerDependencies": {
     "react": "0.13.3"

@@ -1,8 +1,13 @@
 var React = require('react');
-var irl = require('../index');
+var irl = require('../lib');
+var assign = require('object-assign');
 
 var createClass = React.createClass;
 var createElement = React.createElement;
+var createFactory = React.createFactory;
+
+var Link = createFactory(irl.Link);
+
 var DOM = React.DOM;
 var h1 = DOM.h1;
 var h2 = DOM.h2;
@@ -15,15 +20,6 @@ var li = DOM.li;
 var a = DOM.a;
 var button = DOM.button;
 var PropTypes = React.PropTypes;
-
-var pages = [
-  {text: 'Sim', href: '/'},
-  {text: 'Não', href: '/nao'},
-  {text: 'Talvez', href: '/talvez'}
-].map(function (p, index) {
-    return li({key: index},
-      a({href: p.href}, p.text));
-  });
 
 var cType = {
   childComponent: PropTypes.func.isRequired
@@ -55,7 +51,19 @@ var Raiz = createClass({
       div({className: 'row'},
 
         aside({className: 'col-sm-4'},
-          ul({className: 'nav nav-pills nav-stacked'}, pages)
+          ul({className: 'nav nav-pills nav-stacked'},
+
+            [
+              {text: 'Sim', href: '/'},
+              {text: 'Não', href: '/nao'},
+              {text: 'Talvez', href: '/talvez'}
+            ].map(function (p, index) {
+                var attributes = assign({activeClassName: 'text-uppercase'}, p);
+                delete attributes.text;
+                return li({key: index},
+                  Link(attributes, p.text));
+              })
+          )
         ),
 
         div({className: 'col-sm-8'},
@@ -123,9 +131,9 @@ var ConteMais = createClass({
 
   render: function () {
 
-    return a({
+    return Link({
       className: 'btn btn-default',
-      href: this.context.route.pathname + '/the-end'
+      href: './the-end'
     }, 'e daí');
 
   }
