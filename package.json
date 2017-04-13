@@ -2,7 +2,7 @@
   "name": "react-page",
   "repository": "chrisamaral/react-page",
   "description": "minimalist router for react",
-  "version": "2.5.4",
+  "version": "2.5.5",
   "license": "MIT",
   "main": "lib/index.js",
   "scripts": {
